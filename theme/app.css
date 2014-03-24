@@ -1,0 +1,41 @@
+body {
+  background-color: #2B303B;
+}
+.contentWrapper {
+  padding: 10px;
+}
+.contentWrapper > header {
+  padding: 10px 0px;
+}
+.contentWrapper > header h1,
+.contentWrapper > header label {
+  color: #C0C5CE;
+}
+.contentWrapper > header p {
+  color: #C0C5CE;
+}
+.content {
+  background-color: #C0C5CE;
+  border-radius: 3px;
+  min-height: 300px;
+  padding: 10px;
+}
+.content small {
+  color: #fff;
+}
+.calcTotal {
+  font-weight: bold;
+}
+table {
+  background-color: #fff;
+}
+h5 {
+  background-color: #2B303B;
+  color: #C0C5CE;
+  padding: 10px;
+  margin-bottom: 0px;
+}
+.summary {
+  background-color: #2B303B;
+  color: #C0C5CE;
+}

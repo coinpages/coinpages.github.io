@@ -1,1 +1,116 @@
-Hello, world!
+<!DOCTYPE html>
+<html ng-app="coinpagesApp" lang="en">
+<head>
+  <title>Coinpag.es</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="./bower_components/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="./theme/app.css">
+</head>
+<body>
+  <div class="contentWrapper" ng-controller="app">
+    <header>
+      <div class="pull-right">
+        <form> 
+          <fieldset>
+            <label>Standardize to:</label>
+            <select ng-model="state.activeCurrency" ng-options="key as key for (key, currency) in currencies"> 
+            </select>
+          </fieldset>
+          <fieldset>
+            <label>Amount mBTC:</label>
+            <input type="number" ng-model="state.amountBaseline" />
+          </fieldset>
+        </form>
+      </div>
+      <h1 class="appTitle">Coinpag.es</h1>
+      <p>Warning: the market and currency rates seen here are not live updating at this time</p>
+    </header>
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div ng-repeat="market in markets" class="col-md-2">
+            <h2>{{ market.name }}</h2>
+            <h3>{{ market.currencies[0] }}</h3>
+            <h4>{{ market.liveData.avg | number:2 }} <small>{{ market.liveData.volume | number:0 }} BTC</small></h4>
+            <p>{{ market.liveData.avg | currencyConvert:market.currencies[0]:state.activeCurrency | currency:state.activeCurrency }}</p>
+            <hr>
+            <div ng-repeat="set in [{name: 'Buy', value: 'ask', type: 'deposit', fee: 1}, {name: 'Sell', value: 'bid', type: 'withdraw', fee: -1}]">
+              <h5>{{ set.name }}</h5>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>{{ market.currencies[0] }}</th>
+                    <th>{{ state.activeCurrency }}</th>
+                  </tr>
+                </thead>
+                <tr>
+                  <td>
+                    base
+                  </td>
+                  <td>
+                    {{ market.liveData[set.value] * state.amountBaseline/1000 | number:2 }}
+                  </td>
+                  <td>
+                    {{ market.liveData[set.value] * state.amountBaseline/1000  | currencyConvert:market.currencies[0]:state.activeCurrency | number:2 }}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    trade
+                  </td>
+                  <td>
+                    {{ market.calculateTradeFees(set.value, state.amountBaseline/1000) | number:2 }}
+                  </td>
+                  <td>
+                    {{ market.calculateTradeFees(set.value, state.amountBaseline/1000) | currencyConvert:market.currencies[0]:state.activeCurrency | number:2 }}
+                  </td>
+                </tr>
+                <tr class="calcTotal">
+                  <td>
+                    cost
+                  </td>
+                  <td>
+                    {{ market.calculateNet(set.value, state.amountBaseline/1000) | number:2 }}
+                  </td>
+                  <td>
+                    {{ market.calculateNet(set.value, state.amountBaseline/1000) | currencyConvert:market.currencies[0]:state.activeCurrency | number:2 }}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    {{ market.fees.default || '&nbsp;' }} +/-
+                  </td>
+                  <td>
+                    {{ market.calculateFees(market.calculateNet(set.value, state.amountBaseline/1000), set.type) | number:2 }}
+                  </td>
+                  <td>
+                    {{ market.calculateFees(market.calculateNet(set.value, state.amountBaseline/1000), set.type) | currencyConvert:market.currencies[0]:state.activeCurrency | number:2 }}
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    total
+                  </td>
+                  <td>
+                    {{ market.calculateNet(set.value, state.amountBaseline/1000) + (set.fee * market.calculateFees(market.calculateNet(set.value, state.amountBaseline/1000), set.type)) | number:2 }}
+                  </td>
+                  <td class="calcTotal summary">
+                    {{ market.calculateNet(set.value, state.amountBaseline/1000) + (set.fee * market.calculateFees(market.calculateNet(set.value, state.amountBaseline/1000), set.type)) | currencyConvert:market.currencies[0]:state.activeCurrency | number:2 }}
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <hr>
+            <p>Trade fee: {{ market.tradeFees[0].percent * 100 | number:2 }}%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="./bower_components/angular/angular.min.js"></script>
+  <script type="text/javascript" src="./scripts/app.js"></script>
+  <script type="text/javascript" src="./scripts/markets.js"></script>
+  <script type="text/javascript" src="./scripts/currencies.js"></script>
+</body>
+</html>
